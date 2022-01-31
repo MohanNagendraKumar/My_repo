@@ -1,0 +1,30 @@
+node{
+    def mavenHome= tool name: "Maven 3.8.4"
+    stage('Checkout Code')
+    {
+        git credentialsId: '3a6c76d2-1ff8-4aa2-b0d4-b54625ea17e3', url: 'https://github.com/Devops-organization-mohan/java-web-app-docker.git'
+    }
+    stage('Build Package')
+    {
+        sh "${mavenHome}/bin/mvn clean package"
+    }
+    stage('Docker Image Creation')
+    {
+        sh "docker build -t mohan629/docker_images:1 ."
+    }
+    stage('Push Image to DockerHub')
+    {
+        withCredentials([string(credentialsId: 'HubPassword', variable: 'HubPassword')]) {
+        sh "docker login -u mohan629 -p ${HubPassword}"
+        }
+        sh "docker push mohan629/docker_images:1"
+    }
+    stage('Create Docker Container on deployment server')
+    {
+        sshagent(['SSH']) {
+        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.44.90 docker rm -f JavaContainer || true"
+        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.44.90 docker run -d --name JavaContainer -p 8080:8080 mohan629/docker_images:1"
+        }
+      
+    }
+}
