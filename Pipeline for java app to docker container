@@ -16,6 +16,7 @@ node{
     {
         withCredentials([string(credentialsId: 'HubPassword', variable: 'HubPassword')]) {
         sh "docker login -u mohan629 -p ${HubPassword}"
+        #sh "docker login -u <username> -p ${HubPassword} ip:port(URL)/DNS_name (if we are working with private repo server like nexus/Jfrog)
         }
         sh "docker push mohan629/docker_images:1"
     }
