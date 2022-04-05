@@ -1,0 +1,10 @@
+- hosts: all
+  become: true
+  vars:
+    mylink: "~/jdk"
+    myfile: "/tmp/infra/amazon-corretto-18.0.0.37.1-linux-x64"
+  tasks:
+  - name: Create the directory
+    file:
+      path: /tmp/infra_new
+      state: directory
